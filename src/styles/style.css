@@ -60,9 +60,26 @@ table.pictable {
 }
 
 .pictable td {
-    /* border-style: none; */
     margin: 0;
     padding: 0;
+}
+
+table.layouttable {
+    border-collapse: collapse;
+    margin: 10;
+    padding: 5;
+    border-style: none;
+}
+
+.layouttable tr {
+    margin: 5;
+    padding: 5;
+    border-style: none;
+}
+
+.layouttable td {
+    margin: 5;
+    padding: 5;
 }
 
 .main {

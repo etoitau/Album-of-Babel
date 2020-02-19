@@ -3,10 +3,10 @@ import { ColorCell } from './color-cell.class'
 export class PicViewer {
     gridWidth: number;
     gridHeight: number;
-    cellSize: number = 10;
-    color: string = "#FFFFFF";
+    public static readonly DEFAULT_PIC_SIZE = 16;
+    private cellSize: number = ColorCell.DEFAULT_SIZE;
     div: HTMLDivElement;
-    table: HTMLTableElement;
+    private table: HTMLTableElement;
     cells: Array<Array<ColorCell>>;
     
     constructor(gridWidth: number, gridHeight: number) {
@@ -17,6 +17,40 @@ export class PicViewer {
         this.div = document.createElement("div") as HTMLDivElement;
         this.cells = this.createCells();
         this.populateTable();
+    }
+
+    getHexData() {
+        let data = "";
+        for (let row of this.cells) {
+            for (let cell of row) {
+                data = data + cell.getColor();
+            }
+        }
+        return data;
+    }
+
+    setFromHexData(data: string) {
+        if (data.length != this.gridHeight * this.gridWidth * 6) {
+            console.log("data wrong size " + data.length + " vs " + (this.gridHeight * this.gridWidth * 6));
+            return;
+        }
+        
+        let place = 0;
+        for (let row of this.cells) {
+            for (let cell of row) {
+                cell.setColor(data.substring(place, place = place + 6));
+            }
+        }
+    }
+
+    setCellSize(size: number) {
+        this.cellSize = size;
+
+        for (let row of this.cells) {
+            for (let cell of row) {
+                cell.setSize(size);
+            }
+        }
     }
 
     setCellColor(row: number, col: number, color: string) {

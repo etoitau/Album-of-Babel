@@ -1,6 +1,7 @@
 export class ColorCell {
-    cellSize: number;
-    color: string = "#FF00FF";
+    public static readonly DEFAULT_SIZE = 10;
+    private cellSize: number;
+    private color: string = "202020";
     div: HTMLDivElement;
     
     constructor(cellSize: number) {
@@ -8,7 +9,6 @@ export class ColorCell {
         this.div = document.createElement("div") as HTMLDivElement;
         this.setSize(this.cellSize);
         this.setColor(this.color);
-        this.div.addEventListener("mouseenter", (e:Event) => this.onTouchAction(e));
     }
 
     setSize(size:number) {
@@ -19,17 +19,10 @@ export class ColorCell {
 
     setColor(hex:string) {
         this.color = hex;
-        this.div.style.backgroundColor = this.color;
+        this.div.style.backgroundColor = "#" + this.color;
     }
 
-    onTouchAction(e: Event) {
-        if (this.color == "#FFFFFF") {
-            this.setColor("#000000");
-        } else {
-            this.setColor("#FFFFFF");
-        }
+    getColor() {
+        return this.color;
     }
-
-    
-
 }

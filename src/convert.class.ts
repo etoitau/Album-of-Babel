@@ -6,11 +6,29 @@ export class Convert {
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
         "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
         ".", "-", "_", "~"];
-    static readonly vigArray: Array<number> = [6, 2, 8, 3, 1, 8, 5, 3, 0, 7];
+    // static readonly vigArray: Array<number> = [97, 7, 11, 29, 13, 83, 61, 31, 2, 19];
     static readonly tenArray: Array<number> = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    static readonly primes: Array<number> = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+    // static readonly primes: Array<number> = [607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709]; // 17
+    // static readonly primeMod = Convert.primes.length;
 
     static maxBig: bigint;
+
+    static hexToName(hexDec: string): string {
+        return this.bigIntToBase(this.baseToBigInt(hexDec, this.hexiDecimal), this.bigBase);
+    }
+
+    static nameToHex(name: string, len: number) {
+        return this.fixLength(this.bigIntToBase(this.baseToBigInt(name, this.bigBase), this.hexiDecimal), len)
+    }
+
+    static fixLength(input: string, len: number) {
+        // add leading zeros
+        if (input.length < len) {
+            return "0".repeat(len - input.length) + input;
+        } else {
+            return String(input);
+        }
+    }
 
     static bigIntShortForm(bi: bigint) {
         let asString = bi.toString();
@@ -38,72 +56,88 @@ export class Convert {
     // get hex string
     // sum digits to get prime
     // use prime to shuffle
+    // run modified vigenere on hex
     // convert to bigint
 
     // convert bigint to hex
+    // undo vig cipher
     // sum to get prime
     // use prime to unshuffle
 
-    static shuffleHexString(hex: string) {
-        let prime = this.hexPrimeSum(hex);
-        let stringOut = "";
-        for (let i = 0; i < hex.length; i++) {
-            stringOut = stringOut + hex.charAt((i * prime) % hex.length);
-        }
-        return stringOut;
-    }
+    // static hexToBigInt(hex: string) {
+    //     return this.baseToBigInt(this.cipher(this.shuffleHexString(hex)), this.hexiDecimal);
+    // }
 
-    static unShuffleHexString(hex: string) {
-        let prime = this.hexPrimeSum(hex);
-        let asStringArray = hex.split("");
-        let stringOutArray = Array(asStringArray.length);
-        for (let i = 0; i < asStringArray.length; i++) {
-            stringOutArray[i * prime % stringOutArray.length] = asStringArray[i];
-        }
-        return stringOutArray.join("");
-    }
+    // static bigIntToHex(bi: bigint, size: number) {
+    //     return this.unShuffleHexString(this.decipher(this.fixLength(this.bigIntToBase(bi, this.hexiDecimal), size)));
+    // }
 
-    static hexPrimeSum(num: string) {
-        let index = 0;
-        for (let c of num) {
-            index = (index + this.hexiDecimal.indexOf(c)) % this.primes.length;
-        }
-        return this.primes[index];
-    }
+    // static shuffleHexString(hex: string) {
+    //     // console.log("shuffle in: " + hex);
+    //     let prime = this.hexPrimeSum(hex);
+    //     let stringOut = "";
+    //     for (let i = 0; i < hex.length; i++) {
+    //         let index = (i * prime) % hex.length;
+    //         // console.log(index);
+    //         stringOut = stringOut + hex.charAt(index);
+    //     }
+    //     // console.log("shuffle out: " + stringOut);
+    //     return stringOut;
+    // }
 
-    // not used
-    static primeSum(num: bigint) {
-        let index = 0;
-        let asString = num.toString();
-        for (let c of asString) {
-            index = (index + Number(c)) % this.primes.length;
-        }
-        return this.primes[index];
-    }
+    // static unShuffleHexString(hex: string) {
+    //     let prime = this.hexPrimeSum(hex);
+    //     let asStringArray = hex.split("");
+    //     let stringOutArray = Array(asStringArray.length);
+    //     for (let i = 0; i < asStringArray.length; i++) {
+    //         stringOutArray[i * prime % stringOutArray.length] = asStringArray[i];
+    //     }
+    //     return stringOutArray.join("");
+    // }
 
-    // not used
-    static cipher(num: bigint) {
-        // simple Vigenère cipher
-        let stringIn = num.toString();
-        let stringOut = "";
-        for (let i = 0; i < stringIn.length; i++) {
-            stringOut = stringOut + 
-                ((Number(stringIn.charAt(i)) + this.vigArray[i % this.vigArray.length]) % 10);
-        }
-        return BigInt(stringOut);
-    }
+    // static hexPrimeSum(num: string) {
+    //     let index = 0;
+    //     for (let c of num) {
+    //         index = (index + this.hexiDecimal.indexOf(c)) % this.primes.length;
+    //     }
+    //     return this.primes[index];
+    // }
 
-    // not used
-    static decipher(num: bigint) {
-        let stringIn = num.toString();
-        console.log(stringIn);
-        let stringOut = "";
-        for (let i = 0; i < stringIn.length; i++) {
-            stringOut = stringOut + 
-                ((Number(stringIn.charAt(i)) + 10 - this.vigArray[i % this.vigArray.length]) % 10);
-        }
-        return BigInt(stringOut);
-    }
+    // // not used
+    // static primeSum(num: bigint) {
+    //     let index = 0;
+    //     let asString = num.toString();
+    //     for (let c of asString) {
+    //         index = (index + Number(c)) % this.primes.length;
+    //     }
+    //     return this.primes[index];
+    // }
+
+    // static cipher(hexString: string) {
+    //     // simple Vigenère cipher
+    //     // hex string in and hex string out
+    //     let stringOut = "";
+    //     for (let i = 0; i < hexString.length; i++) {
+    //         let startValue = this.hexiDecimal.indexOf(hexString.charAt(i));
+    //         let toAdd = this.vigArray[i % this.vigArray.length];
+    //         let endValue = this.hexiDecimal[(startValue + toAdd) % this.hexiDecimal.length];
+    //         stringOut = stringOut + endValue;
+    //     }
+    //     return stringOut;
+    // }
+
+    // static decipher(hexString: string) {
+    
+    //     let stringOut = "";
+    //     for (let i = 0; i < hexString.length; i++) {
+    //         let startValue = this.hexiDecimal.indexOf(hexString.charAt(i));
+    //         let toSub = this.vigArray[i % this.vigArray.length];
+    //         let index = (((startValue - toSub) % this.hexiDecimal.length) + this.hexiDecimal.length) % this.hexiDecimal.length;
+    //         let endValue = this.hexiDecimal[index];
+    //         stringOut = stringOut + endValue;
+    //     }
+    //     return stringOut;
+    // }
     
     static baseToBigInt(num: string, base: Array<string>) {
         const bBase = BigInt(base.length);
@@ -129,7 +163,6 @@ export class Convert {
     }
 
     static numberToBase(num: number, base: Array<string>) {
-        console.log("doing a convert")
         const bBase = base.length;
         var digits = Array();
         while (num > 0) {

@@ -4,6 +4,7 @@ import { ColorPick } from './color-pick.class';
 import { Pen } from './pen.class';
 import { ColorCell } from './color-cell.class';
 import { Convert } from './convert.class';
+import { Cipher } from './cipher.class';
 
 export class Page {
     editorView: PicViewer;
@@ -65,7 +66,16 @@ export class Page {
 
         let a = document.createElement("a");
         a.setAttribute("align", "center");
+        a.innerHTML = "Clear";
+        a.href = "#";
+        a.onclick = () => this.clearEditor();
+        p.appendChild(a);
+        p.appendChild(getBr());
+
+        a = document.createElement("a");
+        a.setAttribute("align", "center");
         a.innerHTML = "Find this in album";
+        a.href = "#";
         a.onclick = () => this.findDrawnAndShow();
         p.appendChild(a);
         p.appendChild(getBr());
@@ -74,15 +84,14 @@ export class Page {
         a = document.createElement("a");
         a.setAttribute("align", "center");
         a.innerHTML = "Flip to random page";
+        a.href = "#";
         a.onclick = () => this.findRandomAndShow();
         p.appendChild(a);
-        p.appendChild(document.createElement("br"));
-
 
         // spacer
-        div = getDiv();
-        div.style.height = "30px";
-        document.body.appendChild(div);
+        // div = getDiv();
+        // div.style.height = "30px";
+        // document.body.appendChild(div);
 
         // viewer
         table = document.createElement("table");
@@ -104,6 +113,7 @@ export class Page {
         this.leftView = new PicViewer(picSize, picSize);
         this.leftView.setCellSize(0.6 * ColorCell.DEFAULT_SIZE)
         div.appendChild(this.leftView.div);
+        div.onclick = () => this.panLeft();
 
         div = getDiv();
         div.id = "centerview";
@@ -117,44 +127,118 @@ export class Page {
         this.rightView = new PicViewer(picSize, picSize);
         this.rightView.setCellSize(0.6 * ColorCell.DEFAULT_SIZE);
         div.appendChild(this.rightView.div);
+        div.onclick = () => this.panRight();
 
         // page info
         this.pageInfo = getDiv();
         this.pageInfo.align = "center";
         this.pageInfo.id = "pageinfo";
         document.body.appendChild(this.pageInfo);
+
+        // initialize view
+        this.initViews();
+        
+        // credits
+        p = document.createElement("p");
+        p.align = "center";
+        document.body.appendChild(p);
+        let text = document.createTextNode("by ");
+        p.appendChild(text);
+        a = document.createElement("a");
+        a.setAttribute("align", "center");
+        a.innerHTML = "Kyle Chatman";
+        a.href = "http://cs.kchatman.com";
+        p.appendChild(a);
+        p.appendChild(getBr());
+        text = document.createTextNode("inspired by: ");
+        p.appendChild(text);
+        a = document.createElement("a");
+        a.setAttribute("align", "center");
+        a.innerHTML = "Library of Babel";
+        a.href = "https://libraryofbabel.info/";
+        p.appendChild(a);
+    }
+
+    clearEditor() {
+        this.editorView.reset();
+    }
+
+    initViews() {
+        let name = new URLSearchParams(window.location.search).get("name");
+        if (name == null) {
+            console.log("no name");
+            this.findRandomAndShow();
+        } else {
+            console.log("name provided");
+            let size = this.editorView.gridHeight * this.editorView.gridWidth * 6;
+            this.editorView.setFromHexData(Convert.nameToHex(name, size));
+            this.findDrawnAndShow();
+        }
+    }
+
+    panLeft() {
+        // center moves to right
+        let centHex = this.centerView.getHexData();
+        this.rightView.setFromHexData(centHex);
+        // left moves to center
+        let leftHex = this.leftView.getHexData();
+        this.centerView.setFromHexData(leftHex);
+        // left gets next
+        this.updateNeighbors(true, false);
+        this.updatePageInfo(leftHex);
+    }
+
+    panRight() {
+        // center moves to left
+        let centHex = this.centerView.getHexData();
+        this.leftView.setFromHexData(centHex);
+        // right moves to center
+        let rightHex = this.rightView.getHexData();
+        this.centerView.setFromHexData(rightHex);
+        // right gets next
+        this.updateNeighbors(false, true);
+        this.updatePageInfo(rightHex);
     }
 
     findDrawnAndShow() {
         console.log("findDrawnAndShow called")
         let hexData = this.editorView.getHexData();
         this.centerView.setFromHexData(hexData);
-        this.updateNeighbors();
+        this.updateNeighbors(true, true);
         this.updatePageInfo(hexData);
     }
     
-    updateNeighbors() {
-        let hexData = this.centerView.getHexData();
-        let shuffled = Convert.shuffleHexString(hexData);
-        let bi = Convert.baseToBigInt(shuffled, Convert.hexiDecimal);
+    updateNeighbors(left: boolean, right: boolean) {
+        let centerHexData = this.centerView.getHexData();
+        // let ciphered = Cipher.streamIn(centerHexData);
+        // let bi = Convert.baseToBigInt(ciphered, Convert.hexiDecimal);
+        let bi = Cipher.cipherToBigInt(centerHexData);
+        
+        let neighborBi: bigint;
         let one = BigInt("1");
+        let asHex: string;
     
-        let leftBi = bi - one;
-        let leftShuffledHex = Convert.bigIntToBase(leftBi, Convert.hexiDecimal);
-        let leftHex = Convert.unShuffleHexString(leftShuffledHex);
-        this.leftView.setFromHexData(leftHex);
-    
-        let rightBi = bi + one;
-        let rightShuffledHex = Convert.bigIntToBase(rightBi, Convert.hexiDecimal);
-        let rightHex = Convert.unShuffleHexString(rightShuffledHex);
-        this.rightView.setFromHexData(rightHex);
+        if (left) {
+            neighborBi = bi - one;
+            // asHex = Convert.fixLength(Convert.bigIntToBase(neighborBi, Convert.hexiDecimal), centerHexData.length);
+            // this.leftView.setFromHexData(Cipher.streamOut(asHex));
+            this.leftView.setFromHexData(Cipher.cipherFromBigInt(neighborBi, centerHexData.length));
+        }
+
+        if (right) {
+            neighborBi = bi + one;
+            // asHex = Convert.fixLength(Convert.bigIntToBase(neighborBi, Convert.hexiDecimal), centerHexData.length);
+            // this.rightView.setFromHexData(Cipher.streamOut(asHex));
+            this.rightView.setFromHexData(Cipher.cipherFromBigInt(neighborBi, centerHexData.length));
+        }
     }
     
     updatePageInfo(hexData: string) {
         this.pageInfo.innerHTML = "";
 
-        let shuffled = Convert.shuffleHexString(hexData);
-        let bi = Convert.baseToBigInt(shuffled, Convert.hexiDecimal);
+        // let ciphered = Cipher.streamIn(hexData);
+        // let bi = Convert.baseToBigInt(ciphered, Convert.hexiDecimal);
+        let bi = Cipher.cipherToBigInt(hexData);
     
         let div = this.pageInfo;
         let span = document.createElement("span");
@@ -171,10 +255,16 @@ export class Page {
         span.innerText = "Found " + Convert.getPercent(bi) + "% through book";
         div.appendChild(span);
         div.appendChild(getBr());
+
+        let name = Convert.hexToName(hexData);
+
+        window.history.replaceState(null, document.title, "?name=" + name);
     }
     
     findRandomAndShow() {
-        // todo
+        this.centerView.setRandom();
+        this.updateNeighbors(true, true);
+        this.updatePageInfo(this.centerView.getHexData());
     }
 }
 

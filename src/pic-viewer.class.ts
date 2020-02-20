@@ -1,4 +1,5 @@
 import { ColorCell } from './color-cell.class'
+import { Convert } from './convert.class';
 
 export class PicViewer {
     gridWidth: number;
@@ -19,6 +20,22 @@ export class PicViewer {
         this.populateTable();
     }
 
+    reset() {
+        for (let row of this.cells) {
+            for (let cell of row) {
+                cell.reset();
+            }
+        }
+    }
+
+    setRandom() {
+        for (let row of this.cells) {
+            for (let cell of row) {
+                cell.setRandom();
+            }
+        }
+    }
+
     getHexData() {
         let data = "";
         for (let row of this.cells) {
@@ -30,11 +47,14 @@ export class PicViewer {
     }
 
     setFromHexData(data: string) {
-        if (data.length != this.gridHeight * this.gridWidth * 6) {
+        let targetDataSize = this.gridHeight * this.gridWidth * 6;
+        if (data.length > targetDataSize) {
             console.log("data wrong size " + data.length + " vs " + (this.gridHeight * this.gridWidth * 6));
             return;
         }
-        
+
+        data = Convert.fixLength(data, targetDataSize);
+
         let place = 0;
         for (let row of this.cells) {
             for (let cell of row) {

@@ -1,22 +1,60 @@
 import { Page } from "./page.class";
 import { Convert } from "./convert.class";
+import { Cipher } from "./cipher.class";
 
 let page = new Page();
 
+//test
+let input = "cafe23";
+let bi = Cipher.cipherToBigInt(input);
+console.log(bi);
+let result = Cipher.cipherFromBigInt(bi, input.length);
+console.log(result);
+
 // test
-let input = "ff3301";
-let one = BigInt("1");
-console.log(input);
-let cipher = Convert.shuffleHexString(input);
-console.log(cipher);
-let asBi = Convert.baseToBigInt(cipher, Convert.hexiDecimal);
-console.log(asBi);
-let minusOne = asBi - one;
-console.log(minusOne);
-let hexFrom = Convert.bigIntToBase(minusOne, Convert.hexiDecimal);
-console.log(hexFrom);
-let decipher = Convert.unShuffleHexString(hexFrom);
-console.log(decipher);
+// let input = "000001";
+// console.log(input);
+// let one = BigInt("1")
+// let cbc = Cipher.cbcIn(input);
+// console.log(cbc);
+// let enciph = Cipher.streamIn(cbc);
+// console.log(enciph);
+// // input = "200001";
+// // enciph = Cipher.streamIn(input);
+// // console.log(enciph);
+// let asBi = Convert.baseToBigInt(enciph, Convert.hexiDecimal);
+// console.log(asBi);
+// asBi = asBi + one;
+// console.log(asBi);
+// enciph = Convert.fixLength(Convert.bigIntToBase(asBi, Convert.hexiDecimal), input.length);
+// console.log(enciph);
+// let back = Cipher.streamOut(enciph);
+// console.log(back);
+// let final = Cipher.cbcOut(back);
+// console.log(final);
+// enciph = Cipher.cbcIn(back);
+// console.log(enciph);
+
+// test
+// let input = "ffffff";
+// let one = BigInt("1");
+// console.log("in:       " + input);
+// let shuffle = Convert.shuffleHexString(input);
+// console.log("shuffled: " + shuffle);
+// let cipher = Convert.cipher(shuffle);
+// console.log("ciphered: " + cipher);
+// let asBi = Convert.baseToBigInt(cipher, Convert.hexiDecimal);
+// console.log("as bigint:" + asBi);
+// let minusOne = asBi - one;
+// console.log("minusone: " + minusOne);
+// let hexFrom = Convert.bigIntToBase(minusOne, Convert.hexiDecimal);
+// console.log("to hex:   " + hexFrom);
+// let fixLen = Convert.fixLength(hexFrom, input.length);
+// console.log("fix len:  " + fixLen);
+// let decipher = Convert.decipher(fixLen);
+// console.log("uncipher: " + decipher);
+// let newHex = Convert.unShuffleHexString(decipher);
+// console.log("unshuffle:" + newHex);
 
 // import { TitleBuilder } from './build-title.class';
 // import { PicViewer } from './pic-viewer.class';

@@ -52,15 +52,16 @@ export class ColorPick {
         cell2.appendChild(this.b);
         
         this.setListeners();
+        this.updateColor();
     }
 
     setListeners() {
-        this.r.addEventListener("input", (e:Event) => this.updateColor(e));
-        this.g.addEventListener("input", (e:Event) => this.updateColor(e));
-        this.b.addEventListener("input", (e:Event) => this.updateColor(e));
+        this.r.addEventListener("input", (e:Event) => this.updateColor());
+        this.g.addEventListener("input", (e:Event) => this.updateColor());
+        this.b.addEventListener("input", (e:Event) => this.updateColor());
     }
 
-    updateColor(e: Event) {
+    updateColor() {
         
         if (this.r.value == null || this.r.value == "" ||
             this.g.value == null || this.g.value == "" ||
@@ -84,6 +85,7 @@ export class ColorPick {
         input.type = "number";
         input.min = "0";
         input.max = "255";
+        input.value = "217";
         return input;
     }
 }

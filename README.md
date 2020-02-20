@@ -1,5 +1,10 @@
-# Name
-Description
+# The Album of Babel
+The Album of Babel contains every possible picture using 24-bit RGB 
+color and a 16px by 16 px palette. Draw one to find where it is in 
+the album or browse randomly. The url is updated with a permanent 
+link to your current position in the album. This project is 
+indirectly inspired by the short story The Library of Babel by Borges. 
+And more directly by [the webpage of the same name](https://libraryofbabel.info/).
 
 ## License
 Copyright 2020 [Kyle Chatman](http://www.kchatman.com)
@@ -21,6 +26,4 @@ along with this program.  If not, see https://www.gnu.org/licenses/
 
 
 ## Source at
-
-
-## Demo video
+https://github.com/etoitau/Album-of-Babel

@@ -16,12 +16,8 @@ body {
     padding-right: 20px;
     padding-top: auto;
     padding-bottom: auto;
-    /* background-image: url('/src/img/dark-honeycomb.png'); */
     background-color: #202020;
     color: white;
-    /*height: 30px;
-    position: fixed;
-    top: 0px;*/
 }
 
 .navi table {
@@ -90,8 +86,3 @@ a, a:link, a:visited, a:active {
 p {
     padding: 0, 30, 0, 30;
 }
-
-/* a.nostyle, a.nostyle:link, a.nostyle:visited, a.nostyle:active {
-    color: inherit;
-    text-decoration: none;
-} */

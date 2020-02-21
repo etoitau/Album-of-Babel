@@ -1,6 +1,10 @@
 import { ColorCell } from './color-cell.class'
 import { Convert } from './convert.class';
 
+/**
+ * Represents a picture
+ * holds info about and manages "pixels"
+ */
 export class PicViewer {
     gridWidth: number;
     gridHeight: number;
@@ -14,12 +18,15 @@ export class PicViewer {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
         this.table = document.createElement("table") as HTMLTableElement;
-        
         this.div = document.createElement("div") as HTMLDivElement;
+
+        // build the cells
         this.cells = this.createCells();
+        // build layout table and fill with cells
         this.populateTable();
     }
 
+    // set all to default color
     reset() {
         for (let row of this.cells) {
             for (let cell of row) {
@@ -28,6 +35,7 @@ export class PicViewer {
         }
     }
 
+    // set all to random colors
     setRandom() {
         for (let row of this.cells) {
             for (let cell of row) {
@@ -36,6 +44,7 @@ export class PicViewer {
         }
     }
 
+    // get string representation of all cells colors in hexadecimal RGB
     getHexData() {
         let data = "";
         for (let row of this.cells) {
@@ -46,7 +55,9 @@ export class PicViewer {
         return data;
     }
 
+    // given string like getHexData produces, recreate image
     setFromHexData(data: string) {
+        // two hex characters each for R, G, and B = 6
         let targetDataSize = this.gridHeight * this.gridWidth * 6;
         if (data.length > targetDataSize) {
             console.log("data wrong size " + data.length + " vs " + (this.gridHeight * this.gridWidth * 6));
@@ -63,9 +74,9 @@ export class PicViewer {
         }
     }
 
+    // set size of each "pixel"
     setCellSize(size: number) {
         this.cellSize = size;
-
         for (let row of this.cells) {
             for (let cell of row) {
                 cell.setSize(size);
@@ -73,10 +84,12 @@ export class PicViewer {
         }
     }
 
+    // set color of a specific pixel
     setCellColor(row: number, col: number, color: string) {
         this.cells[row][col].setColor(color);
     }
 
+    // create all the 'pixels' and put in data structure
     createCells() {
         let toReturn: Array<Array<ColorCell>> = new Array();
         
@@ -92,6 +105,7 @@ export class PicViewer {
         return toReturn;
     }
 
+    // build the table and fill with 'pixels'
     populateTable() {
         this.table.className = "pictable";
         

@@ -1,5 +1,8 @@
 import { Convert } from "./convert.class";
 
+/**
+ * A "pixel" in the album picture
+ */
 export class ColorCell {
     public static readonly DEFAULT_SIZE = 10;
     public static readonly DEFAULT_COLOR = "202020";
@@ -18,6 +21,7 @@ export class ColorCell {
         this.setColor(ColorCell.DEFAULT_COLOR);
     }
 
+    // set to a random color
     setRandom() {
         let result = "";
         for (let i = 0; i < this.color.length; i++) {

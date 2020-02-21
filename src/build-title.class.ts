@@ -1,3 +1,6 @@
+/**
+ * make the page title
+ */
 export class TitleBuilder {
     static build(container: HTMLDivElement) {
         const style = require('./styles/style.css')
@@ -14,7 +17,5 @@ export class TitleBuilder {
         cell.appendChild(h1);
 
         h1.innerHTML = "Album of Babel";
-
-        
     }
 }

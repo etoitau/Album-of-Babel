@@ -2,6 +2,9 @@ import { ColorCell } from "./color-cell.class";
 import { Convert } from "./convert.class";
 import { Pen } from "./pen.class";
 
+/**
+ * Object for user to pick a color and update the pen with it
+ */
 export class ColorPick {
     parent: HTMLDivElement;
     r: HTMLInputElement;
@@ -13,6 +16,7 @@ export class ColorPick {
     constructor(parent: HTMLDivElement, pen: Pen) {
         this.parent = parent;
         this.pen = pen;
+        // table to lay out elements
         var table = document.createElement("table");
         this.parent.appendChild(table);
         table.className = "layouttable";
@@ -23,11 +27,13 @@ export class ColorPick {
         var cell2 = document.createElement("td");
         row.appendChild(cell2);
 
+        // "pixel" to show current color
         this.square = new ColorCell(20);
         cell1.appendChild(this.square.div);
 
         var span: HTMLSpanElement;
 
+        // enter red value
         span = document.createElement("span") as HTMLSpanElement;
         span.innerText = "R: ";
         cell2.appendChild(span);
@@ -36,6 +42,7 @@ export class ColorPick {
         cell2.appendChild(this.r);
         cell2.appendChild(document.createElement("br"));
 
+        // enter green value
         span = document.createElement("span") as HTMLSpanElement;
         span.innerText = "G: ";
         cell2.appendChild(span);
@@ -44,6 +51,7 @@ export class ColorPick {
         cell2.appendChild(this.g);
         cell2.appendChild(document.createElement("br"));
 
+        // enter blue value
         span = document.createElement("span") as HTMLSpanElement;
         span.innerText = "B: ";
         cell2.appendChild(span);
@@ -62,24 +70,22 @@ export class ColorPick {
     }
 
     updateColor() {
-        
+        // update preview square and pen with current color
         if (this.r.value == null || this.r.value == "" ||
             this.g.value == null || this.g.value == "" ||
             this.b.value == null || this.b.value == "") {
                 return;
         }
-
-        console.log("time to update color")
-        let rNum = Number(this.r.value);
-        let hex = Convert.numberToBase(Number(this.r.value), Convert.hexiDecimal) +
-            Convert.numberToBase(Number(this.g.value), Convert.hexiDecimal) +
-            Convert.numberToBase(Number(this.b.value), Convert.hexiDecimal);
+        let hex = Convert.fixLength(Convert.numberToBase(Number(this.r.value), Convert.hexiDecimal), 2) +
+            Convert.fixLength(Convert.numberToBase(Number(this.g.value), Convert.hexiDecimal), 2) +
+            Convert.fixLength(Convert.numberToBase(Number(this.b.value), Convert.hexiDecimal), 2);
         
         this.square.setColor(hex);
 
         this.pen.setColor(hex);
     }
 
+    // quickly get an input field for an rgb value
     getRGBInput() {
         var input = document.createElement("input") as HTMLInputElement;
         input.type = "number";

@@ -1,6 +1,9 @@
 import { PicViewer } from "./pic-viewer.class";
 import { ColorCell } from "./color-cell.class";
 
+/**
+ * Pen object for user to draw picture
+ */
 export class Pen {
     isDown: boolean = false;
     color: string = "202020";

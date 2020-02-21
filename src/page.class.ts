@@ -6,13 +6,15 @@ import { ColorCell } from './color-cell.class';
 import { Convert } from './convert.class';
 import { Cipher } from './cipher.class';
 
+/**
+ * Build the one-page app
+ */
 export class Page {
     editorView: PicViewer;
     centerView: PicViewer;
     leftView: PicViewer;
     rightView: PicViewer;
     pageInfo: HTMLDivElement;
-
 
     constructor() {
         const picSize = PicViewer.DEFAULT_PIC_SIZE;
@@ -33,7 +35,8 @@ export class Page {
         div.style.height = "30px";
         document.body.appendChild(div);
 
-        // editor view
+        // editor and viewer 
+        // layout table
         let table = document.createElement("table");
         table.align = "center";
         document.body.appendChild(table);
@@ -45,7 +48,7 @@ export class Page {
         let cell2 = document.createElement("td");
         row.appendChild(cell2);
 
-        // editor add viewer
+        // viewer in left cell
         div = getDiv();
         div.id = "editor";
         document.body.appendChild(div);
@@ -53,17 +56,17 @@ export class Page {
         div.appendChild(this.editorView.div);
         cell1.appendChild(div);
 
-        // editor add color input
+        // color picker in right cell
         let pen = new Pen(this.editorView);
         div = getDiv();
         let picker = new ColorPick(div, pen);
         cell2.appendChild(div);
 
-        // get this or random
+        // buttons to clear, find in album, or get random
         let p = document.createElement("p");
         p.align = "center";
         document.body.appendChild(p);
-
+        // clear
         let a = document.createElement("a");
         a.setAttribute("align", "center");
         a.innerHTML = "Clear";
@@ -71,7 +74,7 @@ export class Page {
         a.onclick = () => this.clearEditor();
         p.appendChild(a);
         p.appendChild(getBr());
-
+        // find
         a = document.createElement("a");
         a.setAttribute("align", "center");
         a.innerHTML = "Find this in album";
@@ -79,8 +82,7 @@ export class Page {
         a.onclick = () => this.findDrawnAndShow();
         p.appendChild(a);
         p.appendChild(getBr());
-
-
+        // random
         a = document.createElement("a");
         a.setAttribute("align", "center");
         a.innerHTML = "Flip to random page";
@@ -88,16 +90,11 @@ export class Page {
         a.onclick = () => this.findRandomAndShow();
         p.appendChild(a);
 
-        // spacer
-        // div = getDiv();
-        // div.style.height = "30px";
-        // document.body.appendChild(div);
-
-        // viewer
+        // album viewer
+        // layout table
         table = document.createElement("table");
         table.align = "center";
         document.body.appendChild(table);
-
         row = document.createElement("tr");
         table.appendChild(row);
         cell1 = document.createElement("td");
@@ -106,7 +103,7 @@ export class Page {
         row.appendChild(cell2);
         let cell3 = document.createElement("td");
         row.appendChild(cell3);
-
+        // previous page view
         div = getDiv();
         div.id = "leftview";
         cell1.appendChild(div);
@@ -114,13 +111,13 @@ export class Page {
         this.leftView.setCellSize(0.6 * ColorCell.DEFAULT_SIZE)
         div.appendChild(this.leftView.div);
         div.onclick = () => this.panLeft();
-
+        // current page view
         div = getDiv();
         div.id = "centerview";
         cell2.appendChild(div);
         this.centerView = new PicViewer(picSize, picSize);
         div.appendChild(this.centerView.div);
-
+        // next page view
         div = getDiv();
         div.id = "rightview";
         cell3.appendChild(div);
@@ -135,7 +132,7 @@ export class Page {
         this.pageInfo.id = "pageinfo";
         document.body.appendChild(this.pageInfo);
 
-        // initialize view
+        // initialize view from url or random
         this.initViews();
         
         // credits
@@ -159,10 +156,12 @@ export class Page {
         p.appendChild(a);
     }
 
+    // clear editor view
     clearEditor() {
         this.editorView.reset();
     }
 
+    // depending on url, init with page specified in url, or random
     initViews() {
         let name = new URLSearchParams(window.location.search).get("name");
         if (name == null) {
@@ -176,6 +175,7 @@ export class Page {
         }
     }
 
+    // go back in album
     panLeft() {
         // center moves to right
         let centHex = this.centerView.getHexData();
@@ -188,6 +188,7 @@ export class Page {
         this.updatePageInfo(leftHex);
     }
 
+    // go forward in album
     panRight() {
         // center moves to left
         let centHex = this.centerView.getHexData();
@@ -200,18 +201,17 @@ export class Page {
         this.updatePageInfo(rightHex);
     }
 
+    // find pic in editor in the album
     findDrawnAndShow() {
-        console.log("findDrawnAndShow called")
         let hexData = this.editorView.getHexData();
         this.centerView.setFromHexData(hexData);
         this.updateNeighbors(true, true);
         this.updatePageInfo(hexData);
     }
     
+    // show previous and next page in album as required
     updateNeighbors(left: boolean, right: boolean) {
         let centerHexData = this.centerView.getHexData();
-        // let ciphered = Cipher.streamIn(centerHexData);
-        // let bi = Convert.baseToBigInt(ciphered, Convert.hexiDecimal);
         let bi = Cipher.cipherToBigInt(centerHexData);
         
         let neighborBi: bigint;
@@ -220,24 +220,20 @@ export class Page {
     
         if (left) {
             neighborBi = bi - one;
-            // asHex = Convert.fixLength(Convert.bigIntToBase(neighborBi, Convert.hexiDecimal), centerHexData.length);
-            // this.leftView.setFromHexData(Cipher.streamOut(asHex));
             this.leftView.setFromHexData(Cipher.cipherFromBigInt(neighborBi, centerHexData.length));
         }
 
         if (right) {
             neighborBi = bi + one;
-            // asHex = Convert.fixLength(Convert.bigIntToBase(neighborBi, Convert.hexiDecimal), centerHexData.length);
-            // this.rightView.setFromHexData(Cipher.streamOut(asHex));
             this.rightView.setFromHexData(Cipher.cipherFromBigInt(neighborBi, centerHexData.length));
         }
     }
     
+    // show page #, album size, %, and update url with image represented by hexData
     updatePageInfo(hexData: string) {
         this.pageInfo.innerHTML = "";
 
-        // let ciphered = Cipher.streamIn(hexData);
-        // let bi = Convert.baseToBigInt(ciphered, Convert.hexiDecimal);
+        // page # for this picture
         let bi = Cipher.cipherToBigInt(hexData);
     
         let div = this.pageInfo;
@@ -245,22 +241,27 @@ export class Page {
         span.innerText = "Page: " + Convert.bigIntShortForm(bi);
         div.appendChild(span);
         div.appendChild(getBr());
-        
+
+        // total pages
         span = document.createElement("span");
         span.innerText = "Of: " + Convert.bigIntShortForm(Convert.getMax());
         div.appendChild(span);
         div.appendChild(getBr());
         
+        // position in book
         span = document.createElement("span");
         span.innerText = "Found " + Convert.getPercent(bi) + "% through book";
         div.appendChild(span);
         div.appendChild(getBr());
 
+        // url name for this picture
         let name = Convert.hexToName(hexData);
 
+        // set in url
         window.history.replaceState(null, document.title, "?name=" + name);
     }
     
+    // get a random page
     findRandomAndShow() {
         this.centerView.setRandom();
         this.updateNeighbors(true, true);
@@ -268,10 +269,12 @@ export class Page {
     }
 }
 
-function getBr() {
+// shorthand for a HTMLBRElement
+function getBr(): HTMLBRElement {
     return document.createElement("br");
 }
 
-function getDiv() {
-    return document.createElement("div") as HTMLDivElement;
+// shorthand for a HTMLDivElement
+function getDiv(): HTMLDivElement {
+    return document.createElement("div");
 }
